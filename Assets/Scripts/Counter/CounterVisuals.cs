@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Lean.Pool;
+using UnityEditor;
 
-public class CounterVisuals : MonoBehaviour, IInteraction, ICounterInfo, ICounterSpawner, IPickable, IPlaceable
+public class CounterVisuals : MonoBehaviour, ISelectable, ICounterInfo, ICounterSpawner, IPickable
 {
     [SerializeField] string _nameCounter;
 
@@ -19,7 +20,6 @@ public class CounterVisuals : MonoBehaviour, IInteraction, ICounterInfo, ICounte
     private ISpawner _spawner;
     private KitchenObj _objKitchen;
     private PlayerInteraction _player;
-    private bool _selected = false; 
     
     private void Awake()
     {
@@ -33,59 +33,82 @@ public class CounterVisuals : MonoBehaviour, IInteraction, ICounterInfo, ICounte
     public void SetObjKitchen(KitchenObj objKitchen) => _objKitchen = objKitchen;
 
 
-    public void SelectedCounter()
+    public void SelectedCounter(bool selected)
     {
-        _selected = !_selected;
         Material[] mats = _meshRenderer.materials;
-        mats[0] = _selected ? _materialSelected : _materialNormal;
+        mats[0] = selected ? _materialSelected : _materialNormal;
         _meshRenderer.materials = mats;
     }
 
-    public void ReSpanwKithenObj()
+    private bool ReSpanwKithenObj()
     {
-        if (_objKitchen == null)
-        {
-            GameObject obj = _spawner.Spawn(_objSpawn, _topPositionSpawn.position, Quaternion.identity);
-            _objKitchen = obj.GetComponent<KitchenObj>();
-            _objKitchen.GetNameObjKitchen();
-            _objKitchen.SetCounterVisuals(this);
+        if (_objKitchen != null) return false;
+
+        GameObject obj = _spawner.Spawn(_objSpawn, _topPositionSpawn.position, Quaternion.identity);
+        _objKitchen = obj.GetComponent<KitchenObj>();
+        _objKitchen.GetNameObjKitchen();
+        _objKitchen.SetCounterVisuals(this);
+        return true;
+    }
+
+
+    public KitchenObj PickUpKitchen(PlayerInteraction player, Transform transform)
+    {
+        if(_objKitchen != null && _objKitchen is IPickable pickable) {
+            pickable.Interact(player);
+            _objKitchen = null;
+            return pickable.PickUp(player, transform);
         }
-        else
-        {
-            _objKitchen.GetCounterVisuals();
-        }
-    }
+        return null;
+    }    
 
+    //public void PlaceKitchen(Transform transform = null)
+    //{
+    //    if(_objKitchen == null)return;
+    //    _objKitchen.PlaceKitchen(transform);
 
-    public void PickUp(PlayerInteraction player, Transform transform, Vector3 position)
-    {
-        
-    }
+    //}
 
-    public void Place(PlayerInteraction player, Transform transform, Vector3 position)
-    {
-        
-    }
+    // Interface
 
     public void Interact(PlayerInteraction player)
     {
         _player = player;
-        Debug.Log(_player.name);
     }
 
-    public void OnSelected()
+    public KitchenObj PickUp(PlayerInteraction player, Transform transform)
     {
-        SelectedCounter();
+        if (_player == player) return PickUpKitchen(player, transform);
+        return null;
+    }
+
+    public void Place(PlayerInteraction player, Transform transform)
+    {
+        //if(_player == player)PlaceKitchen();
+    }
+
+    public void OnSelected(PlayerInteraction player)
+    {
+        _player = player;
+        Debug.Log(_player.name);
+
+        SelectedCounter(true);
     }
 
     public void OnDeselected()
     {
-        SelectedCounter();
+        SelectedCounter(false);
     }
 
-    public void Spawner(PlayerInteraction player)
+    public Transform GetTransform()
     {
-        if (_player == player) ReSpanwKithenObj();
+        return transform;
+    }
+
+    public bool Spawner(PlayerInteraction player)
+    {
+        if (_player == player) return ReSpanwKithenObj();
+        return false;
     }
 
     public string GetName(PlayerInteraction player)
@@ -109,4 +132,6 @@ public class CounterVisuals : MonoBehaviour, IInteraction, ICounterInfo, ICounte
     {
       
     }
+
+
 }

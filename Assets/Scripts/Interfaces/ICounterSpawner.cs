@@ -1,4 +1,4 @@
 ﻿public interface ICounterSpawner
 {
-    void Spawner(PlayerInteraction player);
+    bool Spawner(PlayerInteraction player);
 }

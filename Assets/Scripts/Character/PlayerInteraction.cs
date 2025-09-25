@@ -8,25 +8,49 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] GameInput _gameInput;
     [SerializeField] LayerMask _counterMark;
     [SerializeField] float _maxDirectionMark = 2f;
-
+    [SerializeField] Transform _holdPoint;
 
     private float _radius = 0.5f;
-    private IInteraction _currentSelectable;
+    private KitchenObj _kitchenObj;
+    private ISelectable _currentSelectable;
     private Transform _currentTransform;
 
     private void Start()
     {
-        _gameInput.OnInteractAction += _gameInput_OnInteractAction;
+        _gameInput.OnInteractAction += OnInteractAction; ;
     }
 
-    private void _gameInput_OnInteractAction(object sender, System.EventArgs e)
+    private void OnDestroy()
     {
-        if (_currentSelectable != null)
+        _gameInput.OnInteractAction -= OnInteractAction;
+    }
+
+    private void OnInteractAction(object sender, System.EventArgs e)
+    {
+        if (_currentSelectable == null) return;
+
+        if (_currentSelectable is ICounterSpawner spawner)
         {
-            _currentSelectable.Interact(this);
-            if (_currentSelectable is ICounterInfo info) info.GetName(this);
-            if (_currentSelectable is ICounterSpawner spawner) spawner.Spawner(this);
+            bool result = spawner.Spawner(this);
+            if (result) return;
         }
+
+        if (_currentSelectable is IPickable pickable)
+        {
+            if(_kitchenObj != null && _kitchenObj is IPickable place)
+            {
+                place.Place(this);
+            }
+
+            KitchenObj obj = pickable.PickUp(this, _holdPoint);
+            if (obj != null)
+            {
+                _kitchenObj = obj;
+                return;
+            }
+        }
+
+        
     }
 
     private void Update()
@@ -46,15 +70,12 @@ public class PlayerInteraction : MonoBehaviour
 
             if(_currentSelectable == null || hit.transform != _currentTransform)
             {
-                var counter = hit.transform.GetComponent<CounterVisuals>();
-                if(counter is IInteraction interaction)
-                {
-                    _currentSelectable?.OnDeselected();
-                    _currentSelectable = interaction;
-                    _currentTransform = counter.transform;
-                    _currentSelectable.OnSelected();
-                }
-               
+                var selectable = hit.transform.GetComponent<ISelectable>();
+        
+                _currentSelectable?.OnDeselected();
+                _currentSelectable = selectable;
+                _currentTransform = selectable.GetTransform();
+                _currentSelectable.OnSelected(this);
             }    
 
         }else

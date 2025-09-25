@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -31,6 +29,6 @@ public class PlayerMovement : MonoBehaviour
         _rb.MovePosition(_rb.position + input);
 
         if(input != Vector3.zero)
-            transform.forward = Vector3.Slerp(transform.forward, input, Time.deltaTime * _characterData.speed);
+            transform.forward = Vector3.Slerp(transform.forward, input, Time.fixedDeltaTime * _characterData.speed);
     }    
 }

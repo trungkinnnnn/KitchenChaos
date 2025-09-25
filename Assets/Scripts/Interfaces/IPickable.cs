@@ -1,8 +1,11 @@
 
+using Unity.VisualScripting;
 using UnityEngine;
 
 public interface IPickable
 {
-    void PickUp(PlayerInteraction player, Transform transform, Vector3 position);
+    void Interact(PlayerInteraction player);
+    KitchenObj PickUp(PlayerInteraction player, Transform transform);
+    void Place(PlayerInteraction player, Transform transform = null);
 }
 

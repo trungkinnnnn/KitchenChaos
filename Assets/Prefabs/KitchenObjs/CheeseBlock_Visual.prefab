@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 447135873994249808}
   - component: {fileID: 447135873994249809}
   - component: {fileID: -664083256504450223}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: CheeseBlock_Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -56,7 +56,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 447135873994249814}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 0.5
   m_Drag: 0
   m_AngularDrag: 2
   m_UseGravity: 1
@@ -77,6 +77,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _kitchenObjSO: {fileID: 11400000, guid: c4ccbc99e93bac74c9176557dbef59e6, type: 2}
+  _kitchenSelectedSO: {fileID: 11400000, guid: d6d478425097b2d44b1efba00308db36, type: 2}
+  _kitchenMesh: {fileID: 4360303041156900079}
 --- !u!1 &2846860951307273530
 GameObject:
   m_ObjectHideFlags: 0
