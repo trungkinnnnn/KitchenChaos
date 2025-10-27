@@ -1,4 +1,8 @@
-﻿public interface ICounterSpawner
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public interface ICounterSpawner
 {
-    bool Spawner(PlayerInteraction player);
+   void SpawnerKitchen(PlayerInteraction player);
 }

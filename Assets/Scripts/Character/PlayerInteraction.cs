@@ -1,58 +1,86 @@
-using Cinemachine;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerInteraction : MonoBehaviour
 {
+    [SerializeField] Transform RaycastTransform;
     [SerializeField] GameInput _gameInput;
     [SerializeField] LayerMask _counterMark;
     [SerializeField] float _maxDirectionMark = 2f;
     [SerializeField] Transform _holdPoint;
-
+    
     private float _radius = 0.5f;
-    private KitchenObj _kitchenObj;
+    private IPickable _pickObj;
     private ISelectable _currentSelectable;
     private Transform _currentTransform;
 
     private void Start()
     {
-        _gameInput.OnInteractAction += OnInteractAction; ;
+        _gameInput.OnInteract += OnInteract;  
     }
 
     private void OnDestroy()
     {
-        _gameInput.OnInteractAction -= OnInteractAction;
+        _gameInput.OnInteract -= OnInteract;
     }
 
-    private void OnInteractAction(object sender, System.EventArgs e)
+    // OnInteract
+    private void OnInteract(object sender, System.EventArgs e)
     {
         if (_currentSelectable == null) return;
 
-        if (_currentSelectable is ICounterSpawner spawner)
-        {
-            bool result = spawner.Spawner(this);
-            if (result) return;
-        }
+        if(PickUp(_holdPoint))return;
 
-        if (_currentSelectable is IPickable pickable)
-        {
-            if(_kitchenObj != null && _kitchenObj is IPickable place)
-            {
-                place.Place(this);
-            }
+        Spawner();
 
-            KitchenObj obj = pickable.PickUp(this, _holdPoint);
-            if (obj != null)
-            {
-                _kitchenObj = obj;
-                return;
-            }
-        }
-
-        
     }
 
+    // ===============
+    // PickUp
+    // ==============
+
+    private bool PickUp(Transform transform)
+    {
+        bool change = false;
+        IPickable obj = null;
+        if (_currentSelectable is IPickable pickable)
+        {
+            change = true;
+            obj = HandlePickable(pickable, transform);
+        }
+        else if(_pickObj != null && _currentSelectable is IKitchenHolder holder)
+        {
+            change = true;
+            _pickObj.PickUp(this, holder.GetTransformHolder(), holder.GetBaseCounter());
+        }
+        _pickObj = obj;
+        StartCoroutine(WaitForWaitForSeconds(0.2f));
+        return change;
+    }
+
+    private IPickable HandlePickable(IPickable pickable, Transform transform)
+    {
+        BaseCounter baseCounter = pickable.GetBaseCounter();
+        IPickable obj = pickable.PickUp(this, transform);
+
+        if (_pickObj != null) _pickObj.PickUp(this, baseCounter.GetHoldKitchenTransform(), baseCounter);
+        return obj;
+    }    
+
+
+    // ================
+    // Spawner
+    // ================
+    private void Spawner()
+    {
+        if (_currentTransform.TryGetComponent<ICounterSpawner>(out var ICounterSpawner))
+        {
+            ICounterSpawner.SpawnerKitchen(this);
+            HandleSelectedCounter();
+        }
+    }    
+
+   
     private void Update()
     {
         if(_gameInput.GetMovementVectorNormalized() != Vector3.zero)
@@ -61,10 +89,11 @@ public class PlayerInteraction : MonoBehaviour
         }    
     }
 
-    private void HandleSelectedCounter()
+    public void HandleSelectedCounter()
     {
-        Ray ray = new Ray(transform.position, transform.forward);
+        Ray ray = new Ray(RaycastTransform.position, Vector3.down);
         RaycastHit hit;
+        Debug.DrawLine(ray.origin, ray.origin + ray.direction * _maxDirectionMark, Color.red);
         if (Physics.SphereCast(ray, _radius, out hit, _maxDirectionMark, _counterMark))
         {
 
@@ -73,9 +102,7 @@ public class PlayerInteraction : MonoBehaviour
                 var selectable = hit.transform.GetComponent<ISelectable>();
         
                 _currentSelectable?.OnDeselected();
-                _currentSelectable = selectable;
-                _currentTransform = selectable.GetTransform();
-                _currentSelectable.OnSelected(this);
+                SetSelectedCounter(selectable);
             }    
 
         }else
@@ -88,5 +115,18 @@ public class PlayerInteraction : MonoBehaviour
             }    
         }    
     }    
+
+    private IEnumerator WaitForWaitForSeconds(float time)
+    {
+        yield return new WaitForSeconds(time);
+        HandleSelectedCounter();
+    }
+
+    public void SetSelectedCounter(ISelectable selectable)
+    {
+        _currentSelectable = selectable;
+        _currentTransform = selectable.GetSelectableTransform();
+        _currentSelectable.OnSelected(this);
+    }
 
 }

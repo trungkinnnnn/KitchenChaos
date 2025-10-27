@@ -1,16 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class GameInput : MonoBehaviour
 {
-
-    public event EventHandler OnInteractAction; 
-
+    public event EventHandler OnInteract;
     private InputActions _inputActions;
+
+    private float _timeInput = 0.3f;
+    private float _lastInput = -Mathf.Infinity;   
+
     private void Awake()
     {
         _inputActions = new InputActions();
@@ -21,7 +20,9 @@ public class GameInput : MonoBehaviour
 
     private void Interact_performed(InputAction.CallbackContext obj)
     {
-        OnInteractAction?.Invoke(this, EventArgs.Empty);    
+        if (Time.time < _lastInput + _timeInput) return;
+        OnInteract?.Invoke(this, EventArgs.Empty);
+        _lastInput = Time.time;
     }
 
     public Vector3 GetMovementVectorNormalized()

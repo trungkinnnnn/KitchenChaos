@@ -29,6 +29,6 @@ public class PlayerMovement : MonoBehaviour
         _rb.MovePosition(_rb.position + input);
 
         if(input != Vector3.zero)
-            transform.forward = Vector3.Slerp(transform.forward, input, Time.fixedDeltaTime * _characterData.speed);
+            transform.forward = Vector3.Slerp(transform.forward, input, Time.fixedDeltaTime * _characterData.speedRotation);
     }    
 }

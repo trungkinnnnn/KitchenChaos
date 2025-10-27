@@ -8,8 +8,8 @@ public class LeanPoolSpawner : ISpawner
         LeanPool.Despawn(obj);
     }
 
-    public GameObject Spawn(GameObject objPrefab, Vector3 position, Quaternion rotation)
+    public GameObject Spawn(GameObject objPrefab, Vector3 position, Quaternion rotation, Transform parent = null)
     {
-        return LeanPool.Spawn(objPrefab,position,rotation);
+        return LeanPool.Spawn(objPrefab,position,rotation, parent);
     }
 }

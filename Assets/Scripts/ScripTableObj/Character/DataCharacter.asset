@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: DataCharacter
   m_EditorClassIdentifier: 
   speed: 7
+  speedRotation: 5

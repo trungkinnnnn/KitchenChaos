@@ -93,7 +93,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4333778723697538214}
   m_Layer: 6
-  m_Name: TopPositionSpawn
+  m_Name: SpawnPosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -107,7 +107,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1776039105204085643}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.516, z: 0}
+  m_LocalPosition: {x: 0, y: 1.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -124,7 +124,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6726681439135486096}
   - component: {fileID: 7126957572345814233}
-  - component: {fileID: 7126957572345814232}
+  - component: {fileID: 6675499693959449654}
   m_Layer: 6
   m_Name: ClearCounter_Visual
   m_TagString: Untagged
@@ -162,7 +162,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.5, y: 1.5, z: 1.5}
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!114 &7126957572345814232
+--- !u!114 &6675499693959449654
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -171,14 +171,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6726681439135486097}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 374d8ed98e168a848a873b6c4317a752, type: 3}
+  m_Script: {fileID: 11500000, guid: 14d8ca4ac0a1cd741af632d35f3e451d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _nameCounter: ClearCounter
+  _holdKitchenTransform: {fileID: 4333778723697538214}
   _meshRenderer: {fileID: 6171325021895598784}
   _materialNormal: {fileID: 592705374249410987, guid: 36694ad9cc3abc04ab48fdb0373f2037,
     type: 3}
   _materialSelected: {fileID: 2100000, guid: 1a0afd856a35421469b28b916116fd9c, type: 2}
-  _topPositionSpawn: {fileID: 4333778723697538214}
-  _objSpawn: {fileID: 6311757027877452246, guid: 0e2a2841d0d1bc346b67fd10b3da8397,
-    type: 3}

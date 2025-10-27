@@ -2,127 +2,110 @@ using System.Collections;
 using UnityEngine;
 using DG;
 using DG.Tweening;
+using System.Collections.Generic;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
-public class KitchenObj : MonoBehaviour,ISelectable, IPickable
+public class KitchenObj : MonoBehaviour, ISelectable, IPickable
 {
     [SerializeField] KitchenObjSO _kitchenObjSO;
-    [SerializeField] KitchenSelectedSO _kitchenSelectedSO;
-    [SerializeField] MeshRenderer _kitchenMesh;
+    [SerializeField] Vector2 _scaleSeleted = new Vector2(1f, 1.3f);
 
-    private static string _PARA_BASEMAP_MAT =  "_BaseMap";
-
-    private ISpawner _spawner;
+    private BoxCollider _collider;
     private PlayerInteraction _player;
-    private CounterVisuals _visuals;
+    private BaseCounter _counter;
 
-    private Rigidbody _rigidbody;
+    private bool _seleted;  
 
     private void Awake()
     {
-        _spawner = SpawnerFactory.GetSpawner();
-        _rigidbody = GetComponent<Rigidbody>();
+        _collider = GetComponent<BoxCollider>();
     }
 
-    private void OnEnable()
+    public void Init(BaseCounter counter, PlayerInteraction player = null)
     {
-        //StartCoroutine(SetActive(10f));
-       
-    }
-    public void GetNameObjKitchen()
-    {
-        Debug.Log(_kitchenObjSO.nameObj);
+        _counter = counter;
+        _collider.enabled = true;
+        _player = player;
+        SetParentCounter(counter);
     }
 
-    private IEnumerator SetActive(float time)
+    private void OnSelectedChangeScale(bool selected, float duration = 0.3f)
     {
-        yield return new WaitForSeconds(time);
-        _spawner.Despawn(gameObject);
+        _seleted = selected;    
+        transform.DOKill();
+        transform.DOScale(selected ? _scaleSeleted.y : _scaleSeleted.x, duration).SetEase(Ease.OutQuad);
     }
 
-    public void SetCounterVisuals(CounterVisuals visuals)
+    public KitchenObj PickUpKitchen(Transform transform, BaseCounter baseCounter = null, float duration = 0.1f)
     {
-        _visuals = visuals;
-    }  
+        this.transform.DOKill();
 
-    public void GetCounterVisuals() => Debug.Log(_visuals);
-
-    private void OnSelectedChangeMat(bool selected)
-    {
-        Material[] mat = _kitchenMesh.materials;
-        _kitchenSelectedSO.selectedMat.SetTexture(_PARA_BASEMAP_MAT, _kitchenSelectedSO.seletedTexture2D);
-        mat[0] = selected ? _kitchenSelectedSO.selectedMat : _kitchenSelectedSO.normalMat; 
-        _kitchenMesh.materials = mat;
-    }
-
-    public KitchenObj PickUpKitchen(Transform transform, float duration = 0.3f)
-    {
-        _rigidbody.isKinematic = true;
-
-        this.transform.DOKill();    
-        
         this.transform.DORotateQuaternion(transform.rotation, duration).SetEase(Ease.OutQuad);
-        this.transform.DOMove(transform.position, duration).SetEase(Ease.OutQuad).OnComplete(() => 
-        { 
-            this.transform.SetParent(transform, false); 
+        this.transform.DOMove(transform.position, duration).SetEase(Ease.OutQuad).OnComplete(() =>
+        {
+            this.transform.SetParent(transform, false);
             this.transform.localPosition = Vector3.zero;
             this.transform.localRotation = Quaternion.identity;
         });
-        
+
+        SetParentCounter(baseCounter);
         return this;
-    }    
-
-    public void PlaceKitchen(Transform transform = null)
-    {
-        Vector3 position = this.transform.position;
-        Quaternion rotation = this.transform.rotation;
-
-        this.transform.SetParent(transform, false);
-        _rigidbody.isKinematic = false;
-
-        this.transform.position = position;
-        this.transform.rotation = rotation;
-        _player = null;
     }
 
-    // Interface
-
-    public void Interact(PlayerInteraction player)
+    public void TrashKitchen(float duration = 0.5f)
     {
-        _player = player;
-    }
-
-    public KitchenObj PickUp(PlayerInteraction player, Transform transform)
-    {
-        if(_player == player)
+        _collider.enabled = false;
+        transform.DOScale(0f, duration).SetEase(Ease.OutQuad).OnComplete(() =>
         {
-            return PickUpKitchen(transform);
-        }
-        return null;
+            PoolManager.Instance.Despawner(gameObject);
+        });
     }
-    public void Place(PlayerInteraction player, Transform transform = null)
+
+    // =================
+    // IPickable
+    // =================
+    public KitchenObj PickUp(PlayerInteraction player, Transform transform, BaseCounter counter = null)
     {
         if (_player == player)
         {
-            PlaceKitchen();
+            OnSelectedChangeScale(false);
+            return PickUpKitchen(transform, counter);
         }
+        return null;
     }
+
+    public BaseCounter GetBaseCounter() => _counter;
+
+    // =================
+    // ISelectable
+    // =================
 
     public void OnSelected(PlayerInteraction player)
     {
         _player = player;
-        Debug.Log(_player.name);
-        OnSelectedChangeMat(true);
-        GetNameObjKitchen();
+        OnSelectedChangeScale(true);
+        //GetNameObjKitchen();
     }
 
-    public void OnDeselected()
+    public void OnDeselected() => OnSelectedChangeScale(false);
+    public Transform GetSelectableTransform() => transform;
+
+    // Get, Set 
+    public void SetColliderKitchen(bool value) => _collider.enabled = value;
+    public void SetParentCounter(BaseCounter counter)
     {
-        OnSelectedChangeMat(false);
+        _collider.enabled = counter != null;
+        if (counter == null) _counter.SetKitchenObj(null);
+        else counter.SetKitchenObj(this);
+        _counter = counter;
     }
 
-    public Transform GetTransform()
+    public KitchenType GetKitchenType() => _kitchenObjSO.kitchenType;
+    public void GetNameObjKitchen() => Debug.Log(_kitchenObjSO.nameObj);
+    public PlayerInteraction GetPlayerInteraction()
     {
-        return transform;
+        if(_seleted) return _player;
+        return null;
     }
 
 

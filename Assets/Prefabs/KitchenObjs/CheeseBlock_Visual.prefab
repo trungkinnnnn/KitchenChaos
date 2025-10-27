@@ -9,9 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 447135873994249815}
-  - component: {fileID: 447135873994249808}
-  - component: {fileID: 447135873994249809}
   - component: {fileID: -664083256504450223}
+  - component: {fileID: 4759106147614121794}
   m_Layer: 8
   m_Name: CheeseBlock_Visual
   m_TagString: Untagged
@@ -27,43 +26,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 447135873994249814}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.92, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3227326521180528512}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &447135873994249808
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 447135873994249814}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.57431823, y: 0.20982814, z: 0.38489807}
-  m_Center: {x: -0.037159204, y: 0.08321023, z: -0.000397861}
---- !u!54 &447135873994249809
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 447135873994249814}
-  serializedVersion: 2
-  m_Mass: 0.5
-  m_Drag: 0
-  m_AngularDrag: 2
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!114 &-664083256504450223
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,8 +47,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _kitchenObjSO: {fileID: 11400000, guid: c4ccbc99e93bac74c9176557dbef59e6, type: 2}
-  _kitchenSelectedSO: {fileID: 11400000, guid: d6d478425097b2d44b1efba00308db36, type: 2}
-  _kitchenMesh: {fileID: 4360303041156900079}
+  _scaleSeleted: {x: 1.2, y: 1.5}
+--- !u!65 &4759106147614121794
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 447135873994249814}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.15, y: 0.22652733, z: 1.25}
+  m_Center: {x: 0, y: 0.1, z: 0}
 --- !u!1 &2846860951307273530
 GameObject:
   m_ObjectHideFlags: 0

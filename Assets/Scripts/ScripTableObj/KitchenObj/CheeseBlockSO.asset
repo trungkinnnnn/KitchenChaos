@@ -12,7 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fb5a38094001804881f682e444f13c3, type: 3}
   m_Name: CheeseBlockSO
   m_EditorClassIdentifier: 
-  objPrefab: {fileID: 447135873994249814, guid: daa8e65f3dcf4b448bf4b650707d7fac,
+  objNormal: {fileID: 447135873994249814, guid: daa8e65f3dcf4b448bf4b650707d7fac,
+    type: 3}
+  objSlices: {fileID: 7452695456397970542, guid: dc752d5dcd8594a4f97653d9fc53fcf3,
     type: 3}
   spriteObj: {fileID: 21300000, guid: da2d04fe27b94e34ea0b624569b48a6f, type: 3}
   nameObj: Cheese block
+  timeCut: 15
+  timeCook: 20
